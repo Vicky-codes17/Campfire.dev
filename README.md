@@ -1,2 +1,2 @@
 # Campfire.dev
-Friendship
+Friendship Community
