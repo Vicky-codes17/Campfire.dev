@@ -1,4 +1,4 @@
 # Campfire.dev
 Friendship Community!!
 
-[] Idea Implementation
+ - [ ] Idea Implementation
