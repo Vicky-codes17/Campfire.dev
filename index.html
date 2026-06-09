@@ -4,7 +4,183 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Campfire.dev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Rye&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body></body>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <span class="brand__icon" aria-hidden="true">🔥</span>
+        <div>
+          <a class="brand__name" href="#">campfire.dev</a>
+          <p class="brand__tagline">where developers gather, anonymously.</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main">
+        <a class="nav__link nav__link--active" href="#">_home</a>
+        <a class="nav__link" href="#">_confessions</a>
+        <a class="nav__link" href="#">_sit_by_fire</a>
+        <a class="nav__link" href="#">_stories</a>
+        <a class="nav__link" href="#">_about</a>
+      </nav>
+
+      <div class="header-status">
+        <span class="header-status__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="9" r="4" fill="#a78bfa" opacity="0.9"/>
+            <circle cx="18" cy="9" r="4" fill="#a78bfa" opacity="0.9"/>
+            <path d="M5 22c0-4 3-6 5-6s5 2 5 6M13 22c0-4 3-6 5-6s5 2 5 6" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+          </svg>
+        </span>
+        <div class="header-status__text">
+          <strong class="header-status__count">7 developers</strong>
+          <span class="header-status__label">sitting near the fire</span>
+        </div>
+        <span class="header-status__dot" aria-hidden="true"></span>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="terminal panel" aria-label="Campfire terminal">
+        <div class="terminal__titlebar">
+          <div class="window-controls" aria-hidden="true">
+            <span class="window-controls__btn window-controls__btn--close"></span>
+            <span class="window-controls__btn window-controls__btn--min"></span>
+            <span class="window-controls__btn window-controls__btn--max"></span>
+          </div>
+          <span class="terminal__title">campfire-terminal</span>
+          <div class="terminal__mode">
+            <span class="status-dot status-dot--sm"></span>
+            introvert_mode: active
+          </div>
+        </div>
+
+        <div class="terminal__body">
+          <div class="terminal__scene" aria-hidden="true"></div>
+          <div class="terminal__output">
+            <p>systemctl status campfire</p>
+            <p class="t-success">● loaded <span class="t-arrow">→</span> developer_mode: on</p>
+            <p class="t-indent t-dim">└ init complete. hearts ready.</p>
+            <p><span class="t-dim">$</span> ./confession.sh</p>
+            <p class="t-comment"># Initializing...</p>
+            <p><span class="t-dim">$</span> whoami</p>
+            <p>A fellow developer you met recently</p>
+            <p><span class="t-dim">$</span> status --verbose</p>
+            <p class="t-success">Overthinking: true</p>
+            <p class="t-success">Nervous: definitely</p>
+            <p class="t-success">Worth_the_risk: absolutely</p>
+            <p class="t-comment"># Here goes nothing...</p>
+            <p><span class="cursor" aria-hidden="true">█</span></p>
+          </div>
+        </div>
+
+        <div class="terminal__input-row">
+          <input
+            class="terminal__input"
+            type="text"
+            placeholder="Type 'help' to see available commands"
+            aria-label="Terminal command input"
+          />
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="panel panel--activity">
+          <div class="panel__header">
+            <span class="panel__icon" aria-hidden="true">🔥</span>
+            <h2 class="panel__title">Campfire activity</h2>
+          </div>
+          <div class="activity-fire" aria-hidden="true"></div>
+          <div class="activity-bar">
+            <div class="activity-bar__fill"></div>
+          </div>
+          <p class="panel__caption">the fire grows stronger with every shared story.</p>
+        </div>
+
+        <div class="panel panel--confessions">
+          <div class="panel__header">
+            <span class="panel__icon" aria-hidden="true">📜</span>
+            <h2 class="panel__title">recent confessions</h2>
+          </div>
+        </div>
+
+        <div class="panel panel--juno">
+          <div class="panel__header">
+            <span class="panel__icon" aria-hidden="true">🐾</span>
+            <h2 class="panel__title">juno</h2>
+          </div>
+          <div class="juno">
+            <div class="juno__avatar" aria-hidden="true">🐕</div>
+            <div>
+              <p class="juno__name">Juno</p>
+              <p class="juno__status">Juno is resting. Thanks for being here.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <section class="actions" aria-label="Quick actions">
+      <button class="action-card action-card--green" type="button">
+        <span class="action-card__icon" aria-hidden="true">?</span>
+        <span class="action-card__cmd">&gt; help</span>
+        <span class="action-card__desc">show all commands</span>
+      </button>
+      <button class="action-card action-card--red" type="button">
+        <span class="action-card__icon" aria-hidden="true">♥</span>
+        <span class="action-card__cmd">&gt; confess</span>
+        <span class="action-card__desc">share your thoughts</span>
+      </button>
+      <button class="action-card action-card--orange" type="button">
+        <span class="action-card__icon" aria-hidden="true">☺</span>
+        <span class="action-card__cmd">&gt; mood</span>
+        <span class="action-card__desc">how are you feeling?</span>
+      </button>
+      <button class="action-card action-card--amber" type="button">
+        <span class="action-card__icon" aria-hidden="true">🔥</span>
+        <span class="action-card__cmd">&gt; sit</span>
+        <span class="action-card__desc">sit by the fire</span>
+      </button>
+      <button class="action-card action-card--purple" type="button">
+        <span class="action-card__icon" aria-hidden="true">📖</span>
+        <span class="action-card__cmd">&gt; story</span>
+        <span class="action-card__desc">read dev stories</span>
+      </button>
+      <button class="action-card action-card--blue" type="button">
+        <span class="action-card__icon" aria-hidden="true">💬</span>
+        <span class="action-card__cmd">&gt; connect</span>
+        <span class="action-card__desc">meet someone anonymously</span>
+      </button>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__player">
+        <span class="footer__note" aria-hidden="true">♪</span>
+        <span class="footer__player-label">lofi campfire beats</span>
+        <span class="footer__visualizer" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </span>
+        <button class="footer__pause" type="button" aria-label="Pause music">
+          <span aria-hidden="true">⏸</span>
+        </button>
+      </div>
+
+      <p class="footer__quote">
+        <span class="footer__quote-prompt">&gt;</span> progress, not perfection.
+        <span class="footer__heart" aria-hidden="true">❤</span>
+      </p>
+
+      <div class="footer__clock">
+        <span class="footer__moon" aria-hidden="true">🌙</span>
+        <time class="footer__time" id="clock">11:47 PM</time>
+      </div>
+    </footer>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
 </html>
