@@ -152,16 +152,45 @@
             <span class="panel__icon" aria-hidden="true">🐾</span>
             <h2 class="panel__title">juno</h2>
           </div>
-          <div class="juno">
-            <div class="juno__avatar" aria-hidden="true">🐕</div>
-            <div>
-              <p class="juno__name">Juno</p>
-              <p class="juno__status">Juno is resting. Thanks for being here.</p>
+          <button class="juno-button" id="juno-button" type="button" disabled>
+            <div class="juno">
+              <div class="juno__avatar" aria-hidden="true">🐕</div>
+              <div>
+                <p class="juno__name">Juno</p>
+                <p class="juno__status" id="juno-status">Juno is resting. Thanks for being here.</p>
+              </div>
             </div>
-          </div>
+          </button>
         </div>
       </aside>
     </main>
+
+    <!-- Juno Terminal Modal -->
+    <div class="juno-modal" id="juno-modal" hidden>
+      <div class="juno-modal__overlay"></div>
+      <div class="juno-modal__content">
+        <div class="juno-terminal">
+          <div class="terminal__titlebar">
+            <div class="window-controls" aria-hidden="true">
+              <span class="window-controls__btn window-controls__btn--close"></span>
+              <span class="window-controls__btn window-controls__btn--min"></span>
+              <span class="window-controls__btn window-controls__btn--max"></span>
+            </div>
+            <span class="terminal__title">JunoOS v1.0</span>
+            <div class="terminal__mode">
+              <span class="status-dot status-dot--sm"></span>
+              friendship_mode: active
+            </div>
+          </div>
+
+          <div class="terminal__body">
+            <div class="juno-terminal__output" id="juno-output" aria-live="polite"></div>
+            <div class="juno-actions" id="juno-actions"></div>
+          </div>
+        </div>
+        <button class="juno-modal__close" id="juno-modal-close" type="button" aria-label="Close Juno terminal">✕</button>
+      </div>
+    </div>
 
     <section class="actions" aria-label="Quick actions">
       <button class="action-card action-card--green" type="button">
