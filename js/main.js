@@ -154,6 +154,50 @@ const TERMINAL_PAGES = [
     { text: "" },
     { parts: [{ text: "$ ", className: "t-dim" }, { text: "retry_connection()" }] },
   ],
+  [
+    { parts: [{ text: "$ ", className: "t-dim" }, { text: "git revert friendship_attempt" }] },
+    { text: "" },
+    { parts: [{ text: "$ ", className: "t-dim" }, { text: "cat final-log.txt" }] },
+    { text: "" },
+    { text: "No worries." },
+    { text: "" },
+    { text: "I know friendships don't happen instantly." },
+    { text: "" },
+    { text: "But still," },
+    { text: "I'm glad I tried talking to you." },
+    { text: "" },
+    { text: "You're genuinely easy to talk to," },
+    { text: "and that's rare nowadays." },
+    { text: "" },
+    { parts: [{ text: "$ ", className: "t-dim" }, { text: "git commit -m \"respecting boundaries\"" }] },
+  ],
+  [
+    { text: "[main 1a2b3c4] CONNECTION ESTABLISHED", className: "t-success" },
+    { text: "✓ friendship initialized successfully", className: "t-success" },
+    { text: "" },
+    { parts: [{ text: "$ ", className: "t-dim" }, { text: "git commit -m \"new friendship unlocked\"" }] },
+    { text: "[main 5d6e7f8] new friendship unlocked", className: "t-success" },
+    { text: "" },
+    { parts: [{ text: "$ ", className: "t-dim" }, { text: "friendship.log" }] },
+    { text: "a92b1c shared random thoughts" },
+    { text: "f83a2d exchanged memes" },
+    { text: "d72f9e late night conversations" },
+    { text: "c61e7a project discussions" },
+    { text: "b50d6f comfortable silence achieved" },
+    { text: "" },
+    { text: "Honestly?" },
+    { text: "This feels nice." },
+    { text: "" },
+    { parts: [{ text: "$ ", className: "t-dim" }, { text: "echo \"guess i made a new friend today.\"" }] },
+    { text: "guess i made a new friend today.", className: "t-success" },
+    { text: "" },
+    { text: "☕ Looking forward to more conversations." },
+    { text: "" },
+    { parts: [{ text: "$ ", className: "t-dim" }, { text: "git push origin campfire-session" }] },
+    { text: "✓ deployed successfully", className: "t-success" },
+    { text: "" },
+    { parts: [{ text: "$ ", className: "t-dim" }, { text: "exit" }] },
+  ],
 ];
 
 let terminalRunId = 0;
@@ -227,18 +271,12 @@ async function runTerminalTypewriter() {
       runBtn.classList.remove("is-running");
       let btn2 = document.getElementById("terminal-run-alt");
       
-      if (currentPage === 1) {
+      if (currentPage === 1 || currentPage === 2 || currentPage === 3) {
         runBtn.textContent = "> continue";
-        if (btn2) btn2.style.display = "none";
-      } else if (currentPage === 2) {
-        runBtn.textContent = "> continue";
-        if (btn2) btn2.style.display = "none";
-      } else if (currentPage === 3) {
-        runBtn.textContent = "[ what are you getting at? ]";
         if (btn2) btn2.style.display = "none";
       } else if (currentPage === 4) {
+        // After friendship proposal page
         runBtn.textContent = "[ yeah actually ]";
-        // Show dual buttons
         if (!btn2) {
           btn2 = document.createElement("button");
           btn2.id = "terminal-run-alt";
@@ -246,28 +284,30 @@ async function runTerminalTypewriter() {
           btn2.className = "terminal__run";
           btn2.textContent = "[ not really ]";
           runBtn.parentNode.insertBefore(btn2, runBtn.nextSibling);
-          btn2.addEventListener("click", () => {
-            handleNotReally();
-          });
         }
+        btn2.textContent = "[ not really ]";
+        btn2.onclick = () => { handleNotReally(); };
         btn2.style.display = "inline-block";
       } else if (currentPage === 5) {
+        // After error recovery page
         runBtn.textContent = "[ maybe okay ]";
-        // Show dual buttons
         if (!btn2) {
           btn2 = document.createElement("button");
           btn2.id = "terminal-run-alt";
           btn2.type = "button";
           btn2.className = "terminal__run";
-          btn2.textContent = "[ still no ]";
           runBtn.parentNode.insertBefore(btn2, runBtn.nextSibling);
-          btn2.addEventListener("click", () => {
-            console.log("still no selected");
-          });
         }
+        btn2.textContent = "[ still no ]";
+        btn2.onclick = () => { handleStillNo(); };
         btn2.style.display = "inline-block";
-      } else {
-        runBtn.textContent = "> end";
+      } else if (currentPage === 6) {
+        // After git revert page
+        runBtn.textContent = "[ wait actually okay ]";
+        if (btn2) btn2.style.display = "none";
+      } else if (currentPage === 7) {
+        // End of story
+        runBtn.textContent = "> session closed";
         runBtn.disabled = true;
         if (btn2) btn2.style.display = "none";
       }
@@ -276,8 +316,32 @@ async function runTerminalTypewriter() {
 }
 
 function handleNotReally() {
-  // Set currentPage to 4 so that runTerminalTypewriter increments it to 5 and displays the recovery page
+  // Jump to error recovery page (page 4)
   currentPage = 4;
+  runTerminalTypewriter();
+}
+
+function handleStillNo() {
+  // Jump to git revert page (page 5)
+  currentPage = 5;
+  runTerminalTypewriter();
+}
+
+function handleYeahActually() {
+  // Jump directly to success page (page 6)
+  currentPage = 6;
+  runTerminalTypewriter();
+}
+
+function handleMaybeOkay() {
+  // Jump directly to success page (page 6)
+  currentPage = 6;
+  runTerminalTypewriter();
+}
+
+function handleWaitActuallyOkay() {
+  // Jump directly to success page (page 6)
+  currentPage = 6;
   runTerminalTypewriter();
 }
 
@@ -286,7 +350,20 @@ function initTerminalTypewriter() {
   if (!runBtn) return;
 
   runBtn.addEventListener("click", () => {
-    runTerminalTypewriter();
+    // Check current page and call appropriate handler
+    if (currentPage === 4) {
+      // Proposal page - clicking main button means "yeah actually"
+      handleYeahActually();
+    } else if (currentPage === 5) {
+      // Recovery page - clicking main button means "maybe okay"
+      handleMaybeOkay();
+    } else if (currentPage === 6) {
+      // Revert page - clicking main button means "wait actually okay"
+      handleWaitActuallyOkay();
+    } else {
+      // Default behavior for other pages
+      runTerminalTypewriter();
+    }
   });
 
   runTerminalTypewriter();
