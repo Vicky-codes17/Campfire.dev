@@ -373,3 +373,146 @@ updateClock();
 setInterval(updateClock, 30_000);
 initMobileNav();
 initTerminalTypewriter();
+
+/* ── Juno System ── */
+let junoUnlocked = false;
+let junoFriendshipLevel = 0;
+const MAX_FRIENDSHIP = 5;
+
+const JUNO_MESSAGES = [
+  {
+    cmd: "thoughts",
+    output: "The developer seems busy.\n\nI shall continue my nap."
+  },
+  {
+    cmd: "debug",
+    output: "I found the problem.\n\nThe problem is not enough treats."
+  },
+  {
+    cmd: "activity",
+    output: "Sleeping...\n\nSleeping...\n\nStill sleeping..."
+  },
+  {
+    cmd: "contribution",
+    output: "Bug Fixes: 0\n\nMorale Boost: 100"
+  },
+  {
+    cmd: "career",
+    output: "Current Position:\n\nSenior Nap Engineer"
+  }
+];
+
+function showJunoTerminal(command = null) {
+  const modal = document.getElementById("juno-modal");
+  const output = document.getElementById("juno-output");
+  const actions = document.getElementById("juno-actions");
+  
+  modal.hidden = false;
+  output.innerHTML = "";
+  actions.innerHTML = "";
+
+  if (!junoUnlocked) {
+    output.innerHTML = "$ access-juno\n\nAccess denied.\n\nReason: Current activity: sleeping\n\nPlease spend some time by the campfire first.";
+    const returnBtn = document.createElement("button");
+    returnBtn.className = "juno-action-btn";
+    returnBtn.textContent = "[ Okay ]";
+    returnBtn.onclick = closeJunoTerminal;
+    actions.appendChild(returnBtn);
+    return;
+  }
+
+  if (command === "feed") {
+    output.innerHTML = "$ feed-juno\n\nTreat accepted.\n\nFriendship +10\n\nTail Wag +5\n\nHappiness +100";
+    junoFriendshipLevel = Math.min(junoFriendshipLevel + 1, MAX_FRIENDSHIP);
+    updateJunoStatus();
+    
+    if (junoFriendshipLevel === MAX_FRIENDSHIP) {
+      output.innerHTML += "\n\n🏆 Achievement Unlocked\n\nBest Friend";
+    }
+  } else if (command === "pet") {
+    output.innerHTML = "$ pet-juno\n\nTail wag detected.\n\nJuno approves.";
+  } else if (command === "wake") {
+    output.innerHTML = "$ wake-juno\n\nPermission denied.\n\nReason:\n\nJuno was sleeping first.\n\nYou arrived later.";
+  } else if (command === "random") {
+    const msg = JUNO_MESSAGES[Math.floor(Math.random() * JUNO_MESSAGES.length)];
+    output.innerHTML = `$ ${msg.cmd}\n\n${msg.output}`;
+  } else {
+    output.innerHTML = "$ whoami\n\nJuno\n\nProfessional sleeper. Campfire guardian. Treat enthusiast.\n\n$ status\n\nEnergy: 100%\n\nTasks Completed: 0\n\nNaps Completed: 47";
+  }
+
+  // Action buttons
+  const feedBtn = document.createElement("button");
+  feedBtn.className = "juno-action-btn";
+  feedBtn.textContent = "[ Feed Juno ]";
+  feedBtn.onclick = () => showJunoTerminal("feed");
+  actions.appendChild(feedBtn);
+
+  const petBtn = document.createElement("button");
+  petBtn.className = "juno-action-btn";
+  petBtn.textContent = "[ Pet Juno ]";
+  petBtn.onclick = () => showJunoTerminal("pet");
+  actions.appendChild(petBtn);
+
+  const randomBtn = document.createElement("button");
+  randomBtn.className = "juno-action-btn";
+  randomBtn.textContent = "[ Random Message ]";
+  randomBtn.onclick = () => showJunoTerminal("random");
+  actions.appendChild(randomBtn);
+
+  const returnBtn = document.createElement("button");
+  returnBtn.className = "juno-action-btn";
+  returnBtn.textContent = "[ Return to Developer ]";
+  returnBtn.onclick = closeJunoTerminal;
+  actions.appendChild(returnBtn);
+}
+
+function updateJunoStatus() {
+  const statusEl = document.getElementById("juno-status");
+  if (junoFriendshipLevel === 0) {
+    statusEl.textContent = "Juno is resting. Thanks for being here.";
+  } else if (junoFriendshipLevel === 1) {
+    statusEl.textContent = "Juno seems comfortable to talk.";
+  } else if (junoFriendshipLevel === 3) {
+    statusEl.textContent = "Juno trusts you now.";
+  } else if (junoFriendshipLevel === MAX_FRIENDSHIP) {
+    statusEl.textContent = "Juno is your best friend! 🐾";
+  } else {
+    statusEl.textContent = `Juno likes you. [${junoFriendshipLevel}/${MAX_FRIENDSHIP}]`;
+  }
+}
+
+function closeJunoTerminal() {
+  const modal = document.getElementById("juno-modal");
+  modal.hidden = true;
+}
+
+function unlockJuno() {
+  if (!junoUnlocked) {
+    junoUnlocked = true;
+    updateJunoStatus();
+    const junoBtn = document.getElementById("juno-button");
+    junoBtn.disabled = false;
+  }
+}
+
+// Initialize Juno button
+document.getElementById("juno-button").addEventListener("click", () => {
+  showJunoTerminal();
+});
+
+// Close Juno modal
+document.getElementById("juno-modal-close").addEventListener("click", closeJunoTerminal);
+document.getElementById("juno-modal").addEventListener("click", (e) => {
+  if (e.target.id === "juno-modal") {
+    closeJunoTerminal();
+  }
+});
+
+// Track when user scrolls (reads content) to unlock Juno
+let hasScrolled = false;
+document.addEventListener("scroll", () => {
+  if (!hasScrolled && window.scrollY > 200) {
+    hasScrolled = true;
+    unlockJuno();
+  }
+}, { once: false });
