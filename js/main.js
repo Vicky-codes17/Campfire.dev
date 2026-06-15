@@ -42,7 +42,7 @@ function initMobileNav() {
 
   backdrop.addEventListener("click", closeMenu);
 
-  nav.querySelectorAll(".nav__link").forEach((link) => {
+  nav.querySelectorAll(".nav_link").forEach((link) => {
     link.addEventListener("click", closeMenu);
   });
 
@@ -281,7 +281,7 @@ async function runTerminalTypewriter() {
           btn2 = document.createElement("button");
           btn2.id = "terminal-run-alt";
           btn2.type = "button";
-          btn2.className = "terminal__run";
+          btn2.className = "terminal_run";
           btn2.textContent = "[ not really ]";
           runBtn.parentNode.insertBefore(btn2, runBtn.nextSibling);
         }
@@ -295,7 +295,7 @@ async function runTerminalTypewriter() {
           btn2 = document.createElement("button");
           btn2.id = "terminal-run-alt";
           btn2.type = "button";
-          btn2.className = "terminal__run";
+          btn2.className = "terminal_run";
           runBtn.parentNode.insertBefore(btn2, runBtn.nextSibling);
         }
         btn2.textContent = "[ still no ]";
