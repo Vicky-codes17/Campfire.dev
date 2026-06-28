@@ -12,8 +12,6 @@ By the end of this tutorial, you'll have:
 
 - 🔥 An animated campfire
 - 💻 A developer terminal with a typing animation
-- 🤠 A pixel-art developer
-- 🐴 A horse companion
 - 🐶 Juno, the sleepy dog
 - 📱 A responsive landing page
 - ✨ Interactive terminal commands
@@ -94,7 +92,7 @@ Our landing page contains:
 - Status
 - Juno
 
-Each section will be built step by step with explanations so you'll understand **how** everything works—not just where to paste the code.
+Each section will be built step by step with explanations so you'll understand **how** everything works - not just where to paste the code.
 
 ---
 
@@ -103,6 +101,7 @@ Each section will be built step by step with explanations so you'll understand *
 - HTML5
 - CSS3
 - JavaScript (ES6)
+- Pixel Art Assets
 
 ---
 
