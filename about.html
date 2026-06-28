@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Campfire.dev</title>
+  <meta name="description" content="The story behind Campfire.dev, a cozy pixel-art project by Vignesh." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Rye&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=3" />
+  <style>
+    /* ── About page overrides ── */
+    .about-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 0 1.5rem;
+    }
+
+    .story-card {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      background: rgba(14, 18, 28, 0.88);
+      border: 1px solid rgba(196, 92, 42, 0.28);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      padding: 2.25rem 2.5rem 2rem;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(232, 138, 58, 0.06);
+      animation: card-rise 0.6s ease both;
+    }
+
+    @keyframes card-rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* fire glow top edge */
+    .story-card::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--ember-glow), transparent);
+      border-radius: 2px;
+      opacity: 0.6;
+    }
+
+    .story-card_fire {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      line-height: 1;
+      animation: flicker 2.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes flicker {
+      0%   { filter: drop-shadow(0 0 6px rgba(232,138,58,0.7)); }
+      100% { filter: drop-shadow(0 0 14px rgba(232,138,58,1)); }
+    }
+
+    .story-card_title {
+      font-family: var(--font-display);
+      font-size: clamp(1.3rem, 4vw, 1.75rem);
+      color: var(--ember-glow);
+      text-align: center;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.2rem;
+    }
+
+    .story-card_sub {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+
+    .story-card_divider {
+      border: none;
+      border-top: 1px solid rgba(196, 92, 42, 0.18);
+      margin: 1.25rem 0;
+    }
+
+    .story-card_body {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .story-card_body p:first-child {
+      font-size: 0.85rem;
+      color: var(--text);
+      font-style: italic;
+    }
+
+    .story-card_links {
+      margin-top: 0.5rem;
+      padding: 1rem 1.1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(196, 92, 42, 0.15);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .story-card_links-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--ember-glow);
+      margin-bottom: 0.15rem;
+      letter-spacing: 0.04em;
+    }
+
+    .story-card_link {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .story-card_link:hover { color: var(--ember-glow); }
+
+    .story-card_link-icon { font-size: 0.85rem; flex-shrink: 0; }
+
+    .story-card_link-label { color: var(--text-dim); font-size: 0.68rem; }
+
+    .story-card_back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1.5rem;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .story-card_back:hover { color: var(--ember-glow); }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <img class="brand_logo" src="assets/images/firelogo.png" alt="" aria-hidden="true" />
+        <div>
+          <a class="brand_name" href="index.html">Campfire.dev</a>
+          <p class="brand_tagline">where developers gather, anonymously.</p>
+        </div>
+      </div>
+
+      <nav class="nav" id="site-nav" aria-label="Main">
+        <div class="nav_panel">
+          <p class="nav_panel-title">campfire-nav</p>
+          <a class="nav_link" href="index.html">_home</a>
+          <a class="nav_link nav_link--active" href="about.html">_about</a>
+        </div>
+      </nav>
+
+      <div class="nav-backdrop" hidden aria-hidden="true"></div>
+
+      <div class="header-logs" aria-label="Visitors">
+        <div class="header-logs_label">🔥 at the fire</div>
+        <ul class="header-logs_list">
+          <li class="header-logs_entry" style="opacity:1;animation:none;">
+            <span class="header-logs_time">you</span>sitting near the fire
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="main about-main" aria-label="About Campfire.dev">
+      <article class="story-card">
+        <div class="story-card_fire" aria-hidden="true">🔥</div>
+
+        <h1 class="story-card_title">About Campfire.dev</h1>
+        <p class="story-card_sub">a small pixel-art corner of the internet</p>
+
+        <hr class="story-card_divider" />
+
+        <div class="story-card_body">
+          <p>Some people make friends at cafés.<br>
+            Some meet in classrooms.<br>
+            I thought... maybe a campfire could work too.</p>
+
+          <p>Hi, I'm <strong style="color:var(--ember-glow)">Vignesh</strong>, a Computer Science student who enjoys
+            building projects and learning new technologies.</p>
+
+          <p>Campfire.dev is a small pixel-art project inspired by quiet nights, coding sessions, and the idea that
+            meaningful conversations don't have to start with perfect words.</p>
+
+          <p>Whether you're here for the design, the code, or just curious about Juno — I'm glad you stopped by.</p>
+
+          <p>Let's keep building, learning, and sharing stories — one project at a time.</p>
+
+          <div class="story-card_links">
+            <p class="story-card_links-title">🔗 Find Me</p>
+            <a class="story-card_link" href="https://www.codedex.io/@glorycrafter07" target="_blank"
+              rel="noopener noreferrer">
+              <span class="story-card_link-icon">🧑‍💻</span>
+              <span>
+                Codédex
+                <span class="story-card_link-label">@glorycrafter07</span>
+              </span>
+            </a>
+            <a class="story-card_link" href="https://github.com/Vicky-Codes17" target="_blank"
+              rel="noopener noreferrer">
+              <span class="story-card_link-icon">💻</span>
+              <span>
+                GitHub
+                <span class="story-card_link-label">github.com/Vicky-Codes17</span>
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <a class="story-card_back" href="index.html">← back to the fire</a>
+      </article>
+    </main>
+
+    <footer class="footer">
+      <div class="footer_player">
+        <span class="footer_note" aria-hidden="true">♪</span>
+        <span class="footer_player-label">lofi campfire beats</span>
+        <span class="footer_visualizer" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </span>
+        <button class="footer_pause" type="button" aria-label="Pause music">
+          <span aria-hidden="true">⏸</span>
+        </button>
+      </div>
+      <p class="footer_quote">
+        <span class="footer_quote-prompt">&gt;</span> progress, not perfection.
+        <span class="footer_heart" aria-hidden="true">❤</span>
+      </p>
+      <div class="footer_clock">
+        <span class="footer_moon" aria-hidden="true">🌙</span>
+        <time class="footer_time" id="clock">11:47 PM</time>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    function updateClock() {
+      const el = document.getElementById("clock");
+      if (!el) return;
+      const now = new Date();
+      el.textContent = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+  </script>
+</body>
+
+</html>

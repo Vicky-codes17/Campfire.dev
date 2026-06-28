@@ -1,4 +1,80 @@
+/* ── Activity Log ── */
+const LOG_ENTRIES = [
+  "anon_7f2a sat by the fire",
+  "dev_c19 typed 'help'",
+  "juno snored loudly",
+  "anon_3e8b joined the fire",
+  "dev_4a1c ran status check",
+  "anon_9d3f sent a confession",
+  "dev_b72e opened juno terminal",
+  "anon_5c6a is sitting quietly",
+  "dev_01fa checked campfire logs",
+  "juno rolled over in sleep",
+  "anon_8e2d typed 'sit'",
+  "dev_f3b1 stared at the flames",
+  "anon_2c9e joined anonymously",
+  "juno twitched in a dream",
+  "dev_77ac ran a debug check",
+];
+
+let logPool = [...LOG_ENTRIES];
+
+function fmtTime(d) {
+  return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+}
+
+function pushLog(text, isNew = false) {
+  const list = document.getElementById("logs-list");
+  if (!list) return;
+
+  const now = new Date();
+  const li = document.createElement("li");
+  li.className = "header-logs_entry" + (isNew ? " header-logs_entry--new" : "");
+  li.innerHTML = `<span class="header-logs_time">[${fmtTime(now)}]</span>${text}`;
+
+  list.appendChild(li);
+
+  // Keep max 5 entries
+  while (list.children.length > 5) list.removeChild(list.firstChild);
+}
+
+function initActivityLog() {
+  // Seed with 4 past entries (offset times)
+  const now = new Date();
+  const seeds = [
+    { offset: 14, text: "juno snored loudly" },
+    { offset: 9,  text: "anon_3e8b joined the fire" },
+    { offset: 4,  text: "dev_c19 ran status check" },
+    { offset: 1,  text: "anon_7f2a sat by the fire" },
+  ];
+  seeds.forEach(({ offset, text }) => {
+    const t = new Date(now - offset * 60 * 1000);
+    const list = document.getElementById("logs-list");
+    if (!list) return;
+    const li = document.createElement("li");
+    li.className = "header-logs_entry";
+    li.style.opacity = "1";
+    li.style.animation = "none";
+    li.innerHTML = `<span class="header-logs_time">[${fmtTime(t)}]</span>${text}`;
+    list.appendChild(li);
+  });
+
+  // Add a new log entry every 18–28 seconds
+  function scheduleNext() {
+    const delay = 18000 + Math.random() * 10000;
+    setTimeout(() => {
+      if (!logPool.length) logPool = [...LOG_ENTRIES];
+      const idx = Math.floor(Math.random() * logPool.length);
+      const text = logPool.splice(idx, 1)[0];
+      pushLog(text, true);
+      scheduleNext();
+    }, delay);
+  }
+  scheduleNext();
+}
+
 function updateClock() {
+
   const el = document.getElementById("clock");
   if (!el) return;
 
@@ -373,146 +449,339 @@ updateClock();
 setInterval(updateClock, 30_000);
 initMobileNav();
 initTerminalTypewriter();
+initActivityLog();
 
-/* ── Juno System ── */
-let junoUnlocked = false;
-let junoFriendshipLevel = 0;
-const MAX_FRIENDSHIP = 5;
 
-const JUNO_MESSAGES = [
-  {
-    cmd: "thoughts",
-    output: "The developer seems busy.\n\nI shall continue my nap."
-  },
-  {
-    cmd: "debug",
-    output: "I found the problem.\n\nThe problem is not enough treats."
-  },
-  {
-    cmd: "activity",
-    output: "Sleeping...\n\nSleeping...\n\nStill sleeping..."
-  },
-  {
-    cmd: "contribution",
-    output: "Bug Fixes: 0\n\nMorale Boost: 100"
-  },
-  {
-    cmd: "career",
-    output: "Current Position:\n\nSenior Nap Engineer"
-  }
+
+/* ════════════════════════════════
+   Command Popup (help / status / sit / about)
+   Never touches the main terminal.
+   ════════════════════════════════ */
+
+const cmdPopup        = document.getElementById("cmd-popup");
+const cmdPopupOutput  = document.getElementById("cmd-popup-output");
+const cmdPopupTitle   = document.getElementById("cmd-popup-title");
+const cmdPopupClose   = document.getElementById("cmd-popup-close");
+const cmdPopupOverlay = document.getElementById("cmd-popup-overlay");
+
+function openCmdPopup(title, lines) {
+  cmdPopupTitle.textContent = title;
+  cmdPopupOutput.innerHTML = "";
+  lines.forEach(({ text, className }) => {
+    const p = document.createElement("p");
+    if (className) p.className = className;
+    p.textContent = text;
+    cmdPopupOutput.appendChild(p);
+  });
+  const cur = document.createElement("p");
+  cur.innerHTML = '<span class="cursor" aria-hidden="true">█</span>';
+  cmdPopupOutput.appendChild(cur);
+  cmdPopup.hidden = false;
+}
+
+function closeCmdPopup() { cmdPopup.hidden = true; }
+
+cmdPopupClose.addEventListener("click", closeCmdPopup);
+cmdPopupOverlay.addEventListener("click", closeCmdPopup);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCmdPopup(); });
+
+/* ── Command data ── */
+const HELP_OUTPUT = [
+  { text: "$ help", className: "t-dim" },
+  { text: "" },
+  { text: "Available commands:", className: "t-success" },
+  { text: "" },
+  { text: "  help    → Show available commands" },
+  { text: "  status  → Check campfire status" },
+  { text: "  juno    → Talk to Juno" },
+  { text: "  sit     → Sit by the fire" },
+  { text: "  about   → Learn about Campfire.dev" },
+  { text: "" },
+  { text: "Tip:", className: "t-comment" },
+  { text: "  Juno might be sleeping.", className: "t-dim" },
 ];
 
-function showJunoTerminal(command = null) {
-  const modal = document.getElementById("juno-modal");
+const STATUS_OUTPUT = [
+  { text: "$ status", className: "t-dim" },
+  { text: "" },
+  { text: "campfire : Lit 🔥", className: "t-success" },
+  { text: "" },
+  { text: "Developer:", className: "t-success" },
+  { text: "  Coffee       : Low", className: "t-dim" },
+  { text: "  Motivation   : Low", className: "t-dim" },
+];
+
+const SIT_OUTPUT = [
+  { text: "$ sit", className: "t-dim" },
+  { text: "" },
+  { text: "You sit beside the fire." },
+  { text: "" },
+  { text: "The wind is calm." },
+  { text: "" },
+  { text: "Juno snores softly nearby." },
+  { text: "" },
+  { text: "Everything feels peaceful." },
+];
+
+const ABOUT_OUTPUT = [
+  { text: "$ about", className: "t-dim" },
+  { text: "" },
+  { text: "Campfire.dev", className: "t-success" },
+  { text: "" },
+  { text: "A quiet place for developers to gather." },
+  { text: "No usernames. No pressure. Just the fire." },
+  { text: "" },
+  { text: "→ Visit the About page to learn more.", className: "t-dim" },
+];
+
+/* ── Action card listeners ── */
+document.getElementById("cmd-help").addEventListener("click", () => {
+  openCmdPopup("campfire-terminal", HELP_OUTPUT);
+});
+document.getElementById("cmd-status").addEventListener("click", () => {
+  openCmdPopup("campfire-terminal", STATUS_OUTPUT);
+});
+document.getElementById("cmd-sit").addEventListener("click", () => {
+  openCmdPopup("campfire-terminal", SIT_OUTPUT);
+});
+document.getElementById("cmd-juno").addEventListener("click", () => {
+  showJunoTerminal();
+});
+
+/* ── Terminal input field ── */
+const terminalInput = document.querySelector(".terminal_input");
+if (terminalInput) {
+  terminalInput.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    const cmd = terminalInput.value.trim().toLowerCase();
+    terminalInput.value = "";
+    if (!cmd) return;
+
+    if (cmd === "help")   { openCmdPopup("campfire-terminal", HELP_OUTPUT); }
+    else if (cmd === "status") { openCmdPopup("campfire-terminal", STATUS_OUTPUT); }
+    else if (cmd === "sit")    { openCmdPopup("campfire-terminal", SIT_OUTPUT); }
+    else if (cmd === "about")  { openCmdPopup("campfire-terminal", ABOUT_OUTPUT); }
+    else if (cmd === "juno")   { showJunoTerminal(); }
+    else {
+      openCmdPopup("campfire-terminal", [
+        { text: `$ ${cmd}`, className: "t-dim" },
+        { text: "" },
+        { text: `command not found: ${cmd}`, className: "t-error" },
+        { text: "" },
+        { text: "Type 'help' to see available commands.", className: "t-dim" },
+      ]);
+    }
+  });
+}
+
+/* ════════════════════════════════
+   Juno System
+   ════════════════════════════════ */
+let junoUnlocked = false;
+
+/* All Juno messages the modal can cycle through */
+const JUNO_SCENES = [
+  {
+    label: "whoami",
+    lines: [
+      { text: "$ whoami", className: "t-dim" },
+      { text: "" },
+      { text: "Juno", className: "t-success" },
+      { text: "" },
+      { text: "Professional sleeper." },
+      { text: "Campfire guardian." },
+      { text: "Treat enthusiast." },
+    ],
+  },
+  {
+    label: "status",
+    lines: [
+      { text: "$ status", className: "t-dim" },
+      { text: "" },
+      { text: "Energy: 100%", className: "t-success" },
+      { text: "Tasks Completed: 0" },
+      { text: "Naps Completed: 47" },
+    ],
+  },
+  {
+    label: "current-task",
+    lines: [
+      { text: "$ current-task", className: "t-dim" },
+      { text: "" },
+      { text: "Sleeping..." },
+      { text: "" },
+      { text: "Sleeping..." },
+      { text: "" },
+      { text: "Still sleeping..." },
+    ],
+  },
+  {
+    label: "contribution",
+    lines: [
+      { text: "$ contribution", className: "t-dim" },
+      { text: "" },
+      { text: "Bug Fixes: 0" },
+      { text: "Morale Boost: 100", className: "t-success" },
+    ],
+  },
+  {
+    label: "debug",
+    lines: [
+      { text: "$ debug", className: "t-dim" },
+      { text: "" },
+      { text: "I found the problem.", className: "t-success" },
+      { text: "" },
+      { text: "Not enough treats." },
+    ],
+  },
+  {
+    label: "wake-juno",
+    lines: [
+      { text: "$ wake-juno", className: "t-dim" },
+      { text: "" },
+      { text: "Permission denied.", className: "t-error" },
+    ],
+  },
+  {
+    label: "assign-task juno",
+    lines: [
+      { text: "$ assign-task juno", className: "t-dim" },
+      { text: "" },
+      { text: "Task failed successfully.", className: "t-error" },
+    ],
+  },
+];
+
+let junoSceneIndex = 0; // start at whoami
+let junoTypewriterId = 0;
+
+function sleepJuno(ms, id) {
+  return new Promise((res, rej) => {
+    setTimeout(() => junoTypewriterId === id ? res() : rej(), ms);
+  });
+}
+
+async function typewriteJunoLines(lines) {
   const output = document.getElementById("juno-output");
-  const actions = document.getElementById("juno-actions");
-  
-  modal.hidden = false;
+  if (!output) return;
   output.innerHTML = "";
+
+  const id = ++junoTypewriterId;
+
+  try {
+    for (const { text, className } of lines) {
+      const p = document.createElement("p");
+      if (className) p.className = className;
+      output.appendChild(p);
+      output.scrollTop = output.scrollHeight;
+
+      for (const ch of text) {
+        p.textContent += ch;
+        await sleepJuno(28 + Math.random() * 22, id);
+      }
+      await sleepJuno(60, id);
+    }
+    // blinking cursor
+    const cur = document.createElement("p");
+    cur.innerHTML = '<span class="cursor" aria-hidden="true">█</span>';
+    output.appendChild(cur);
+  } catch {
+    // aborted — do nothing
+  }
+}
+
+function showJunoTerminal() {
+  const modal   = document.getElementById("juno-modal");
+  const actions = document.getElementById("juno-actions");
+
+  modal.hidden = false;
   actions.innerHTML = "";
 
   if (!junoUnlocked) {
-    output.innerHTML = "$ access-juno\n\nAccess denied.\n\nReason: Current activity: sleeping\n\nPlease spend some time by the campfire first.";
-    const returnBtn = document.createElement("button");
-    returnBtn.className = "juno-action-btn";
-    returnBtn.textContent = "[ Okay ]";
-    returnBtn.onclick = closeJunoTerminal;
-    actions.appendChild(returnBtn);
+    // Before intro complete: Do Not Disturb
+    junoTypewriterId++; // abort any running animation
+    const output = document.getElementById("juno-output");
+    output.innerHTML = "";
+    [
+      { text: "$ access-juno", className: "t-dim" },
+      { text: "" },
+      { text: "Do not disturb.", className: "t-error" },
+      { text: "" },
+      { text: "Current Activity:", className: "t-success" },
+      { text: "Sleeping..." },
+      { text: "" },
+      { text: "Complete the developer introduction first." },
+    ].forEach(({ text, className }) => {
+      const p = document.createElement("p");
+      if (className) p.className = className;
+      p.textContent = text;
+      output.appendChild(p);
+    });
+
+    const okBtn = document.createElement("button");
+    okBtn.className = "juno-action-btn";
+    okBtn.textContent = "[ Okay ]";
+    okBtn.onclick = closeJunoTerminal;
+    actions.appendChild(okBtn);
     return;
   }
 
-  if (command === "feed") {
-    output.innerHTML = "$ feed-juno\n\nTreat accepted.\n\nFriendship +10\n\nTail Wag +5\n\nHappiness +100";
-    junoFriendshipLevel = Math.min(junoFriendshipLevel + 1, MAX_FRIENDSHIP);
-    updateJunoStatus();
-    
-    if (junoFriendshipLevel === MAX_FRIENDSHIP) {
-      output.innerHTML += "\n\n🏆 Achievement Unlocked\n\nBest Friend";
-    }
-  } else if (command === "pet") {
-    output.innerHTML = "$ pet-juno\n\nTail wag detected.\n\nJuno approves.";
-  } else if (command === "wake") {
-    output.innerHTML = "$ wake-juno\n\nPermission denied.\n\nReason:\n\nJuno was sleeping first.\n\nYou arrived later.";
-  } else if (command === "random") {
-    const msg = JUNO_MESSAGES[Math.floor(Math.random() * JUNO_MESSAGES.length)];
-    output.innerHTML = `$ ${msg.cmd}\n\n${msg.output}`;
-  } else {
-    output.innerHTML = "$ whoami\n\nJuno\n\nProfessional sleeper. Campfire guardian. Treat enthusiast.\n\n$ status\n\nEnergy: 100%\n\nTasks Completed: 0\n\nNaps Completed: 47";
-  }
+  // Show current scene with typewriter
+  typewriteJunoLines(JUNO_SCENES[junoSceneIndex].lines);
 
-  // Action buttons
-  const feedBtn = document.createElement("button");
-  feedBtn.className = "juno-action-btn";
-  feedBtn.textContent = "[ Feed Juno ]";
-  feedBtn.onclick = () => showJunoTerminal("feed");
-  actions.appendChild(feedBtn);
-
-  const petBtn = document.createElement("button");
-  petBtn.className = "juno-action-btn";
-  petBtn.textContent = "[ Pet Juno ]";
-  petBtn.onclick = () => showJunoTerminal("pet");
-  actions.appendChild(petBtn);
-
+  // "Random Juno Messages" button cycles through scenes
   const randomBtn = document.createElement("button");
   randomBtn.className = "juno-action-btn";
-  randomBtn.textContent = "[ Random Message ]";
-  randomBtn.onclick = () => showJunoTerminal("random");
+  randomBtn.textContent = "[ Random Juno Messages ]";
+  randomBtn.onclick = () => {
+    junoSceneIndex = (junoSceneIndex + 1) % JUNO_SCENES.length;
+    typewriteJunoLines(JUNO_SCENES[junoSceneIndex].lines);
+  };
   actions.appendChild(randomBtn);
 
-  const returnBtn = document.createElement("button");
-  returnBtn.className = "juno-action-btn";
-  returnBtn.textContent = "[ Return to Developer ]";
-  returnBtn.onclick = closeJunoTerminal;
-  actions.appendChild(returnBtn);
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "juno-action-btn";
+  closeBtn.textContent = "[ Close ]";
+  closeBtn.onclick = closeJunoTerminal;
+  actions.appendChild(closeBtn);
 }
 
 function updateJunoStatus() {
-  const statusEl = document.getElementById("juno-status");
-  if (junoFriendshipLevel === 0) {
-    statusEl.textContent = "Juno is resting. Thanks for being here.";
-  } else if (junoFriendshipLevel === 1) {
-    statusEl.textContent = "Juno seems comfortable to talk.";
-  } else if (junoFriendshipLevel === 3) {
-    statusEl.textContent = "Juno trusts you now.";
-  } else if (junoFriendshipLevel === MAX_FRIENDSHIP) {
-    statusEl.textContent = "Juno is your best friend! 🐾";
-  } else {
-    statusEl.textContent = `Juno likes you. [${junoFriendshipLevel}/${MAX_FRIENDSHIP}]`;
-  }
+  const el = document.getElementById("juno-status");
+  if (!el) return;
+  el.textContent = "Juno is resting. Thanks for being here.";
 }
 
 function closeJunoTerminal() {
-  const modal = document.getElementById("juno-modal");
-  modal.hidden = true;
+  junoTypewriterId++; // abort typewriter
+  document.getElementById("juno-modal").hidden = true;
 }
 
 function unlockJuno() {
   if (!junoUnlocked) {
     junoUnlocked = true;
-    updateJunoStatus();
     const junoBtn = document.getElementById("juno-button");
-    junoBtn.disabled = false;
+    if (junoBtn) junoBtn.disabled = false;
   }
 }
 
-// Initialize Juno button
+/* ── Juno sidebar button ── */
 document.getElementById("juno-button").addEventListener("click", () => {
   showJunoTerminal();
 });
 
-// Close Juno modal
+/* ── Juno modal close ── */
 document.getElementById("juno-modal-close").addEventListener("click", closeJunoTerminal);
 document.getElementById("juno-modal").addEventListener("click", (e) => {
-  if (e.target.id === "juno-modal") {
-    closeJunoTerminal();
-  }
+  if (e.target.id === "juno-modal") closeJunoTerminal();
 });
 
-// Track when user scrolls (reads content) to unlock Juno
-let hasScrolled = false;
-document.addEventListener("scroll", () => {
-  if (!hasScrolled && window.scrollY > 200) {
-    hasScrolled = true;
-    unlockJuno();
-  }
-}, { once: false });
+/* ── Unlock Juno when story finishes ── */
+function checkJunoUnlock() {
+  if (currentPage >= TERMINAL_PAGES.length) unlockJuno();
+}
+const terminalRunBtn = document.getElementById("terminal-run");
+if (terminalRunBtn) {
+  terminalRunBtn.addEventListener("click", () => setTimeout(checkJunoUnlock, 100));
+}
+

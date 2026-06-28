@@ -23,13 +23,8 @@
         </div>
       </div>
 
-      <button
-        class="nav-toggle"
-        type="button"
-        aria-expanded="false"
-        aria-controls="site-nav"
-        aria-label="Open navigation menu"
-      >
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"
+        aria-label="Open navigation menu">
         <span class="nav-toggle_prompt">&gt; menu</span>
         <span class="nav-toggle_icon" aria-hidden="true">
           <span></span>
@@ -41,30 +36,20 @@
       <nav class="nav" id="site-nav" aria-label="Main">
         <div class="nav_panel">
           <p class="nav_panel-title">campfire-nav</p>
-          <a class="nav_link nav_link--active" href="#">_home</a>
-          <a class="nav_link" href="#">_confessions</a>
-          <a class="nav_link" href="#">_sit_by_fire</a>
-          <a class="nav_link" href="#">_stories</a>
-          <a class="nav_link" href="#">_about</a>
+          <a class="nav_link nav_link--active" href="index.html">_home</a>
+          <a class="nav_link" href="about.html">_about</a>
         </div>
       </nav>
 
       <div class="nav-backdrop" hidden aria-hidden="true"></div>
 
-      <div class="header-status">
-        <span class="header-status_icon" aria-hidden="true">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="10" cy="9" r="4" fill="#a78bfa" opacity="0.9" />
-            <circle cx="18" cy="9" r="4" fill="#a78bfa" opacity="0.9" />
-            <path d="M5 22c0-4 3-6 5-6s5 2 5 6M13 22c0-4 3-6 5-6s5 2 5 6" stroke="#a78bfa" stroke-width="2"
-              stroke-linecap="round" opacity="0.85" />
-          </svg>
-        </span>
-        <div class="header-status_text">
-          <strong class="header-status_count">7 developers</strong>
-          <span class="header-status_label">sitting near the fire</span>
-        </div>
-        <span class="header-status_dot" aria-hidden="true"></span>
+      <div class="header-logs" aria-label="Visitors">
+        <div class="header-logs_label">🔥 at the fire</div>
+        <ul class="header-logs_list">
+          <li class="header-logs_entry" style="opacity:1;animation:none;">
+            <span class="header-logs_time">you</span>sitting near the fire
+          </li>
+        </ul>
       </div>
     </header>
 
@@ -140,12 +125,6 @@
           </div>
         </div>
 
-        <div class="panel panel--confessions">
-          <div class="panel_header">
-            <span class="panel_icon" aria-hidden="true">📜</span>
-            <h2 class="panel_title">recent confessions</h2>
-          </div>
-        </div>
 
         <div class="panel panel--juno">
           <div class="panel_header">
@@ -192,43 +171,61 @@
       </div>
     </div>
 
+    <!-- Command Output Popup -->
+    <div class="cmd-popup" id="cmd-popup" hidden>
+      <div class="cmd-popup_overlay" id="cmd-popup-overlay"></div>
+      <div class="cmd-popup_content">
+        <div class="juno-terminal">
+          <div class="terminal_titlebar">
+            <div class="window-controls" aria-hidden="true">
+              <span class="window-controls_btn window-controls_btn--close"></span>
+              <span class="window-controls_btn window-controls_btn--min"></span>
+              <span class="window-controls_btn window-controls_btn--max"></span>
+            </div>
+            <span class="terminal_title" id="cmd-popup-title">campfire-terminal</span>
+            <div class="terminal_mode">
+              <span class="status-dot status-dot--sm"></span>
+              output: ready
+            </div>
+          </div>
+          <div class="terminal_body" style="min-height:0;">
+            <div class="juno-terminal_output" id="cmd-popup-output" aria-live="polite"></div>
+          </div>
+          <div class="juno-actions"
+            style="padding:0.75rem 1.25rem;border-top:1px solid var(--panel-border);background:rgba(0,0,0,.2);">
+            <button class="juno-action-btn" id="cmd-popup-close" type="button">[ Close ]</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <section class="actions" aria-label="Quick actions">
-      <button class="action-card action-card--green" type="button">
+      <button class="action-card action-card--green" id="cmd-help" type="button">
         <span class="action-card_icon" aria-hidden="true">?</span>
         <span class="action-card_cmd">&gt; help</span>
         <span class="action-card_desc">show all commands</span>
       </button>
-      <button class="action-card action-card--red" type="button">
-        <span class="action-card_icon" aria-hidden="true">♥</span>
-        <span class="action-card_cmd">&gt; confess</span>
-        <span class="action-card_desc">share your thoughts</span>
+      <button class="action-card action-card--blue" id="cmd-status" type="button">
+        <span class="action-card_icon" aria-hidden="true">📡</span>
+        <span class="action-card_cmd">&gt; status</span>
+        <span class="action-card_desc">campfire system status</span>
       </button>
-      <button class="action-card action-card--orange" type="button">
-        <span class="action-card_icon" aria-hidden="true">☺</span>
-        <span class="action-card_cmd">&gt; mood</span>
-        <span class="action-card_desc">how are you feeling?</span>
+      <button class="action-card action-card--amber" id="cmd-juno" type="button">
+        <span class="action-card_icon" aria-hidden="true">🐕</span>
+        <span class="action-card_cmd">&gt; juno</span>
+        <span class="action-card_desc">check on juno</span>
       </button>
-      <button class="action-card action-card--amber" type="button">
+      <button class="action-card action-card--orange" id="cmd-sit" type="button">
         <span class="action-card_icon" aria-hidden="true">🔥</span>
         <span class="action-card_cmd">&gt; sit</span>
         <span class="action-card_desc">sit by the fire</span>
-      </button>
-      <button class="action-card action-card--purple" type="button">
-        <span class="action-card_icon" aria-hidden="true">📖</span>
-        <span class="action-card_cmd">&gt; story</span>
-        <span class="action-card_desc">read dev stories</span>
-      </button>
-      <button class="action-card action-card--blue" type="button">
-        <span class="action-card_icon" aria-hidden="true">💬</span>
-        <span class="action-card_cmd">&gt; connect</span>
-        <span class="action-card_desc">meet someone anonymously</span>
       </button>
     </section>
 
     <footer class="footer">
       <div class="footer_player">
         <span class="footer_note" aria-hidden="true">♪</span>
-        <span class="footer_player-label">lofi campfire beats</span>
+        <span class="footer_player-label">Bad Boys</span>
         <span class="footer_visualizer" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span><span></span>
         </span>
